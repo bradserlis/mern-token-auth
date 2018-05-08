@@ -58,7 +58,7 @@ class App extends Component {
         
       <Router>
         <div className='container'>
-        <Nav />
+        <Nav user={this.state.user} updateUser={this.getUser} />
           <Route exact path="/" component={Home} />
           <Route path="/login" component={
             ()=>(<Login user={this.state.user} updateUser={this.getUser} />)
@@ -66,7 +66,9 @@ class App extends Component {
           <Route path="/signup" component={
             ()=>(<Signup user={this.state.user} updateUser={this.getUser} />)
           } />
-          <Route path="/profile" component={Profile} />
+          <Route path="/profile" component={
+            ()=>(<Profile user={this.state.user} />)
+     } />
         </div>
       </Router>
       <Footer />

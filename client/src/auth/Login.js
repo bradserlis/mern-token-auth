@@ -41,6 +41,9 @@ class Login extends Component {
 	}
 
 	render(){
+		if(this.props.user){
+			return(<Redirect to="/profile" />)
+		}
 		return(
 			<div>
 			<h2>Login</h2>
