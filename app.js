@@ -6,6 +6,7 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 var path = require('path');
 var app = express();
+var expressJWT = require('express-jwt')
 
 // Mongoose connect
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/mernauth', {useMongoClient: true});
@@ -15,7 +16,7 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(path.resolve(__dirname, 'client', 'public')));
+app.use(express.static(path.resolve(__dirname, 'client', 'build')));
 
 app.use(function(req, res, next) {
   // before every route, attach the flash messages and current user to res.locals
@@ -24,10 +25,26 @@ app.use(function(req, res, next) {
 });
 
 // Controllers
-app.use('/auth', require('./routes/auth'));
+app.use('/auth', expressJWT({
+	secret: process.env.JWT_SECRET,
+	getToken: function fromRequest(req){
+		if(req.body.headers.Authorization &&
+		 req.body.headers.Authorization.split(' ')[0]==='Bearer'){
+			return req.body.headers.Authorization.split(' ')[1];
+		}
+		return null;
+	}
+	//setting up exceptions of pages you can visit without a token,
+	//and the methods available
+}).unless({path:
+ [
+ {url:'/auth/login', methods: ['POST']},
+ {url: '/auth/signup', methods: ['POST']}
+ ]
+}), require('./routes/auth'));
 
 app.get('*', function(req, res, next) {
-	res.sendFile(path.resolve(__dirname, 'client', 'public', 'index.html'));
+	res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
 });
 
 module.exports = app;
