@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 class Signup extends Component {
@@ -16,24 +17,25 @@ class Signup extends Component {
 		console.log(this.state.name, this.state.email, this.state.password)
 		axios.post('/auth/signup', this.state).then(result=>{
 			console.log('success', result);
+			localStorage.setItem('mernToken', result.data.token);
+			//update the user with a call to app js
+			this.props.updateUser();
+
 		}).catch(err =>{
 			console.log('err', err)
 		});
 	}
 
-	handleNameChange = (e)=>{
-		this.setState({name: e.target.value});
-	}	
+	handleNameChange = (e)=>{ this.setState({name: e.target.value});}	
 
-	handleEmailChange = (e)=>{
-		this.setState({email: e.target.value});
-	}
+	handleEmailChange = (e)=>{ this.setState({email: e.target.value});}
 
-	handlePasswordChange = (e)=>{
-		this.setState({password: e.target.value});
-	}
+	handlePasswordChange = (e)=>{ this.setState({password: e.target.value});}
 
 	render(){
+		if(this.props.user){
+			return(<Redirect to="/profile" />)
+		}
 		return(
 			<div>
 			<h2>Sign up as a new user</h2>
@@ -52,7 +54,7 @@ class Signup extends Component {
 				</div>
 				</form>
 			</div>
-			)
+		)
 	}
 }
 
