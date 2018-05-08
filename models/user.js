@@ -18,18 +18,18 @@ var userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
+    minlength: 4,
     maxlength: 99
   }
 });
 
 // Override 'toJSON' to prevent the password from being returned with the user
 userSchema.set('toJSON', {
-  transform: function(doc, ret, options) {
+  transform: function(doc, user, options) {
     var returnJson = {
-      id: ret._id,
-      email: ret.email,
-      name: ret.name
+      id: user._id,
+      email: user.email,
+      name: user.name
     };
     return returnJson;
   }
